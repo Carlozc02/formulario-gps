@@ -38,7 +38,7 @@
 
           document.getElementById("estado").innerText = `Lat: ${lat}, Lon: ${lon}`;
 
-          fetch("https://script.google.com/macros/s/AKfycbzN-qKBqmxNqCzLKQS4w46k9Vy1Drv06iI_CEWZMbagy8I3q7b34vK-v9DuXoFDOSeb/exec", {
+          fetch("https://script.google.com/a/macros/nivelazul.com/s/AKfycbzN-qKBqmxNqCzLKQS4w46k9Vy1Drv06iI_CEWZMbagy8I3q7b34vK-v9DuXoFDOSeb/exec", {
             method: "POST",
             body: JSON.stringify({ lat: lat, lon: lon }),
             headers: {
