@@ -1,78 +1,60 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Formulario GPS</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
-      padding: 2em;
-    }
-    button {
-      padding: 10px 20px;
-      font-size: 16px;
-      cursor: pointer;
+      font-family: sans-serif;
+      padding: 2rem;
+      text-align: center;
+      background-color: #f0f0f0;
     }
     #estado {
-      margin-top: 1em;
+      margin-top: 1rem;
       font-weight: bold;
+      color: #2d2d2d;
     }
   </style>
 </head>
 <body>
-  <h2>Formulario de ubicación</h2>
-  <p>Tu ubicación será capturada automáticamente.</p>
-  <button id="botonUbicacion" onclick="enviarUbicacion()">Enviar ubicación</button>
-  <p id="estado">Esperando ubicación...</p>
+  <h1>Enviar Ubicación GPS</h1>
+  <p>Presiona el botón para enviar tu ubicación actual.</p>
+  <button onclick="enviarUbicacion()">Enviar ubicación</button>
+  <p id="estado"></p>
 
   <script>
     function enviarUbicacion() {
-      const boton = document.getElementById("botonUbicacion");
-      boton.disabled = true;
+      if (!navigator.geolocation) {
+        document.getElementById("estado").innerText = "Geolocalización no es compatible con este navegador.";
+        return;
+      }
+
       document.getElementById("estado").innerText = "Obteniendo ubicación...";
 
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(function(position) {
-          const lat = position.coords.latitude;
-          const lon = position.coords.longitude;
-
-          document.getElementById("estado").innerText = `Lat: ${lat}, Lon: ${lon}`;
+      navigator.geolocation.getCurrentPosition(function (position) {
+        const lat = position.coords.latitude;
+        const lon = position.coords.longitude;
 
         fetch("https://script.google.com/macros/s/AKfycbzZiTgEGsBk-Ua4yEmDnjQP7Vf8LSpd7s3Bs3Drf0uXlynVQDsJMfkZzf5dLNCzK2AH/exec", {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/x-www-form-urlencoded"
-  },
-  body: `lat=${lat}&lon=${lon}`
-})
-.then(res => res.text())
-.then(resp => {
-  document.getElementById("estado").innerText += " - Ubicación enviada con éxito.";
-})
-.catch(err => {
-  document.getElementById("estado").innerText = "Error al enviar los datos.";
-});
-
-        }, function(error) {
-          let mensaje = "Error obteniendo la ubicación.";
-          switch(error.code) {
-            case error.PERMISSION_DENIED:
-              mensaje = "Permiso denegado para acceder a la ubicación.";
-              break;
-            case error.POSITION_UNAVAILABLE:
-              mensaje = "La información de ubicación no está disponible.";
-              break;
-            case error.TIMEOUT:
-              mensaje = "Tiempo de espera agotado al obtener la ubicación.";
-              break;
-          }
-          document.getElementById("estado").innerText = mensaje;
-          boton.disabled = false;
+          method: "POST",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+          },
+          body: `lat=${lat}&lon=${lon}`
+        })
+        .then(res => res.text())
+        .then(resp => {
+          document.getElementById("estado").innerText = "Ubicación enviada con éxito.";
+        })
+        .catch(err => {
+          console.error(err);
+          document.getElementById("estado").innerText = "Error al enviar los datos.";
         });
-      } else {
-        document.getElementById("estado").innerText = "Geolocalización no soportada en este navegador.";
-        boton.disabled = false;
-      }
+      }, function () {
+        document.getElementById("estado").innerText = "No se pudo obtener la ubicación.";
+      });
     }
   </script>
 </body>
